@@ -1,3 +1,6 @@
+import com.mathworks.toolbox.javabuilder.MWException;
+import train.Modeling;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,6 +14,7 @@ public class Server {
     private List<Socket> mList = new ArrayList<Socket>();
     private ServerSocket server = null;
     private ExecutorService myExecutorService = null;
+    private String currentLink = "";
 
 
     public static void main(String[] args) {
@@ -72,9 +76,13 @@ public class Server {
                             this.sendmsg();
                             break;
                         }else{
-                            if (SubDataSolution.get_instance().addDataEpochs(msg)){ //解析原始数据
-                                double[][][] Epoch = SubDataSolution.get_instance().getEpochs();
-                            }
+//                            if (msg.equals("StsrtModel")){
+//                                currentLink = msg;
+//                            }else if (msg.equals("StsrtModel")){
+//                                currentLink = msg;
+//                            }
+//
+//                            SubDataSolution.get_instance().addDataEpochs(msg);
                             msg = socket.getInetAddress() + "   说: " + msg;
                             this.sendmsg();
                         }
@@ -83,20 +91,38 @@ public class Server {
             }catch(Exception e){e.printStackTrace();}
         }
 
+        public void Model(){
+            double[][][] Epoch = SubDataSolution.get_instance().getEpochs();
+            double[][] Label = SubDataSolution.get_instance().getLabels();
+            Modeling train1 = null;
+            try {
+                train1 = new Modeling();
+                Object[] result = train1.train(5,Epoch,Label);
+                System.out.println("第一个输出结果:"+result[0].toString());
+                System.out.println("第二个输出结果:"+result[1].toString());
+                System.out.println("第三个输出结果:"+result[2].toString());
+                System.out.println("第四个输出结果:"+result[3].toString());
+                System.out.println("第五个输出结果:"+result[4].toString());
+            } catch (MWException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         public void sendmsg()
         {
             System.out.println(msg);
-            int num = mList.size();
-            for(int index = 0;index < num;index++)
-            {
-                Socket mSocket = mList.get(index);
+//            int num = mList.size();
+//            for(int index = 0;index < num;index++)
+//            {
+//                Socket mSocket = mList.get(index);
                 PrintWriter pout = null;
                 try {
                     pout = new PrintWriter(new BufferedWriter(
-                            new OutputStreamWriter(mSocket.getOutputStream(),"UTF-8")),true);
+                            new OutputStreamWriter(socket.getOutputStream(),"UTF-8")),true);
                     pout.println(msg);
                 }catch (IOException e) {e.printStackTrace();}
-            }
+//            }
         }
     }
 }

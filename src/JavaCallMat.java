@@ -3,7 +3,7 @@ import com.jmatio.io.MatFileReader;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLDouble;
 import com.jmatio.types.MLSingle;
-import train.Train;
+import train.Modeling;
 
 import java.io.IOException;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class JavaCallMat {
         }
 
         try{
-            Train train1 = new Train();
+            Modeling train1 = new Modeling();
             Object[] result = train1.train(5,MyEpoch,MyLabel);
             System.out.println("第一个输出结果:"+result[0].toString());
             System.out.println("第二个输出结果:"+result[1].toString());
