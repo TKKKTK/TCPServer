@@ -22,7 +22,19 @@ public class SubDataSolution {
     public void addDataEpochs(String hexData) {
         int[] subData = solution(hexData);
         int tag = subData[subData.length-1];
-        Labels[0][groupCount] = tag;
+        if(currentTag != tag){
+            if (tag == 0){ //说明已经采集完一组数据
+                Labels[0][groupCount] = currentTag;
+                Epochs[groupCount] = group1;
+                groupCount++;
+                count = 0;
+            }
+            currentTag  = tag;
+            if (groupCount == 30){
+                groupCount = 0;
+            }
+        }
+
         for (int i = 0; i < step; i ++){
               for (int j = 0; j < portNumber;j++){
                   if (count<4000){
@@ -30,14 +42,6 @@ public class SubDataSolution {
                   }
               }
               count++;
-              if (count == 4000){
-                  Epochs[groupCount] = group1;
-                  groupCount ++;
-                  count = 0;
-                  if (groupCount == 30){
-                      groupCount = 0;
-                  }
-              }
         }
     }
 
@@ -77,11 +81,6 @@ public class SubDataSolution {
         //三字节转四字节整型
         for (int i = 0;i < echartsData.length;i++){
             _3byteTo4byte[i] = byteToInt(echartsData[i]);
-        }
-        if (tag == 1){
-            _3byteTo4byte[_3byteTo4byte.length-1] = 1;
-        }else if (tag == 2){
-            _3byteTo4byte[_3byteTo4byte.length-1] = 0;
         }
 
         return _3byteTo4byte;

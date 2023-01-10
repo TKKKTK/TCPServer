@@ -17,6 +17,7 @@ public class Server {
     private String currentLink = "";
 
 
+
     public static void main(String[] args) {
         new Server();
     }
@@ -76,13 +77,24 @@ public class Server {
                             this.sendmsg();
                             break;
                         }else{
-//                            if (msg.equals("StsrtModel")){
-//                                currentLink = msg;
-//                            }else if (msg.equals("StsrtModel")){
-//                                currentLink = msg;
-//                            }
-//
-//                            SubDataSolution.get_instance().addDataEpochs(msg);
+                            if (msg.equals("StsrtModel")){
+                                currentLink = msg;
+                                continue;
+                            }else if (msg.equals("StopModel")){
+                                currentLink = msg;
+                                continue;
+                            }
+                            if (currentLink.equals("StsrtModel")){
+                                SubDataSolution.get_instance().addDataEpochs(msg);
+                            }
+                            if (currentLink.equals("StopModel")){
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                         Model();
+                                    }
+                                }).start();
+                            }
                             msg = socket.getInetAddress() + "   说: " + msg;
                             this.sendmsg();
                         }
