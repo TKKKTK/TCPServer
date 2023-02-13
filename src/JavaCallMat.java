@@ -3,7 +3,7 @@ import com.jmatio.io.MatFileReader;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLDouble;
 import com.jmatio.types.MLSingle;
-import train.Modeling;
+import com.mathworks.toolbox.javabuilder.MWException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class JavaCallMat {
        double[][] MyLabel = null;
         MatFileReader matFileReader = null;
         try {
-            matFileReader = new MatFileReader("SZW_10.mat");
+            matFileReader = new MatFileReader("WG_8.mat");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,7 +33,7 @@ public class JavaCallMat {
             MLArray mlArray = content.get(key);
             System.out.println("value=" + mlArray.toString());
             System.out.println();
-            if (key.equals("MyEpoch")){
+            if (key.equals("Epoch")){
                 // 转换为java数组
                 MyEpoch = transferMLArray(mlArray);
 
@@ -65,18 +65,35 @@ public class JavaCallMat {
                     System.out.println();
                 }
         }
+//         double[][] labels = new double[1][30];
+//        for (int i=0; i < labels[0].length;i++){
+//            labels[0][i] = MyLabel[0][i];
+//        }
 
-        try{
-            Modeling train1 = new Modeling();
-            Object[] result = train1.train(5,MyEpoch,MyLabel);
-            System.out.println("第一个输出结果:"+result[0].toString());
-            System.out.println("第二个输出结果:"+result[1].toString());
-            System.out.println("第三个输出结果:"+result[2].toString());
-            System.out.println("第四个输出结果:"+result[3].toString());
-            System.out.println("第五个输出结果:"+result[4].toString());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        MakeModel train1 = null;
+//        try {
+//            train1 = new MakeModel();
+//            Object[] result = train1.train(5,MyEpoch,MyLabel);
+//            System.out.println("第一个输出结果:"+result[0].toString());
+//            System.out.println("第二个输出结果:"+result[1].toString());
+//            System.out.println("第三个输出结果:"+result[2].toString());
+//            System.out.println("第四个输出结果:"+result[3].toString());
+//            System.out.println("第五个输出结果:"+result[4].toString());
+//        } catch (MWException e) {
+//            e.printStackTrace();
+//        }
+
+//        try{
+//            ModelTest train1 = new ModelTest();
+//            Object[] result = train1.train(5,MyEpoch,MyLabel);
+//            System.out.println("第一个输出结果:"+result[0].toString());
+//            System.out.println("第二个输出结果:"+result[1].toString());
+//            System.out.println("第三个输出结果:"+result[2].toString());
+//            System.out.println("第四个输出结果:"+result[3].toString());
+//            System.out.println("第五个输出结果:"+result[4].toString());
+//        }catch (MWException e){
+//            e.printStackTrace();
+//        }
 
 
     }

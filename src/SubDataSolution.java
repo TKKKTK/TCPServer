@@ -2,47 +2,152 @@ import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 public class SubDataSolution {
 
-    private double[][][] Epochs = new double[30][4000][8]; //存放matLab中需要用到的建模原始数据
-    private double[][] Labels = new double[1][30]; //存放matLab中需要用到的30组建模标签
+    private double[][][] Epochs = null; //存放matLab中需要用到的建模原始数据
+    private double[][] Labels = null; //存放matLab中需要用到的30组建模标签
     private int currentTag = 0; //记录当前的标签
     private int portNumber = 8; //通道数
     private int groupCount = 0; //组数
+    private int currentTagIndex = 0; //当前标签位的数组下标
     private int step = 9; //一个包中的数据长度
-    private int count = 0; //
-    private double[][] group1 = new double[4000][8];
-    private static SubDataSolution _instance;
-    private SubDataSolution(){}
-    public static SubDataSolution get_instance() {
-        if (_instance == null){
-            _instance = new SubDataSolution();
-        }
-        return _instance;
-    }
+    private int count = 0; //一组数据中的下标
+    private double[][][] trainData = null;
+    private boolean isEnd = false; //判断训练数据是否截取满
+    private boolean isStartSub = false;//判断是否开始截取数据
 
-    public void addDataEpochs(String hexData) {
+    public SubDataSolution(){}
+
+    /**
+     * 添加建模时的数据
+     * @param hexData
+     */
+    public boolean addDataEpochs(String hexData) {
         int[] subData = solution(hexData);
         int tag = subData[subData.length-1];
-        if(currentTag != tag){
-            if (tag == 0){ //说明已经采集完一组数据
-                Labels[0][groupCount] = currentTag;
-                Epochs[groupCount] = group1;
-                groupCount++;
-                count = 0;
+        //在握拳/放松开始后的所有数据都加了一个标签
+//        //添加标签数据
+//         if (currentTag != tag){
+//              if (tag == 0){
+//                  if (currentTag == 1){
+//                      Labels[0][currentTagIndex] = 1;
+//                  }else if (currentTag == 2){
+//                      Labels[0][currentTagIndex] = 0;
+//                  }
+//                  currentTagIndex++;
+//                  groupCount++;
+//                  count =0;
+//              }
+//             currentTag = tag;
+//         }
+//         //将打了标签的数据装进数组中
+//         if (tag != 0){
+//             for (int i = 0; i < step; i ++){
+//                 for (int j = 0; j < portNumber;j++){
+//                     if ( count < 4000){
+//                         Epochs[groupCount][count][j] = subData[i*portNumber+j];
+//                     }
+//                 }
+//                 count++;
+//             }
+//         }
+
+        //只在握拳/放松后的第一个数据包中加一个标签
+        //只在握拳/放松开始时加一个标签
+        if (tag != 0){
+            isStartSub = true;
+            if (tag == 1){
+                Labels[0][currentTagIndex] = 1;
+            }else if (tag == 2){
+                Labels[0][currentTagIndex] = 0;
             }
-            currentTag  = tag;
-            if (groupCount == 30){
-                groupCount = 0;
-            }
+            currentTagIndex++;
         }
 
-        for (int i = 0; i < step; i ++){
-              for (int j = 0; j < portNumber;j++){
-                  if (count<4000){
-                      group1[count][j] = subData[i*portNumber+j];
-                  }
-              }
-              count++;
+        if (isStartSub){
+             for (int i = 0; i < step; i ++){
+                 for (int j = 0; j < portNumber;j++){
+                     if ( count < 4000){
+                         Epochs[groupCount][count][j] = subData[i*portNumber+j];
+                     }
+                 }
+                 count++;
+                 if (count == 4000){
+                     groupCount++;
+                     isStartSub = false;
+                     count = 0;
+                     if (groupCount == 30){
+                         groupCount = 0;
+                         return true;
+                     }
+                 }
+             }
         }
+        return false;
+
+    }
+
+    /**
+     * 添加训练时的数据
+     * @param hexData
+     * @return
+     */
+    public boolean addTrainData(String hexData){
+        int[] subData = solution(hexData);
+        int tag = subData[subData.length-1];
+        //握拳/放松这段时间的数据我都加了标签
+//        if (currentTag != tag){
+//              if (tag == 0){
+//                  isEnd = false;
+//              }
+//              currentTag = tag;
+//        }
+//        if (tag == 1 && !isEnd){
+//            for (int i = 0; i < step; i ++){
+//                for (int j = 0; j < portNumber;j++){
+//                        trainData[0][count][j] = subData[i*portNumber+j];
+//                }
+//                count++;
+//                if (count == 2500){
+//                    isEnd = true;
+//                    count = 0;
+//                    return true;
+//                }
+//            }
+//        }
+
+        //只在握拳/放松开始时加一个标签
+        if (tag != 0){
+            isStartSub = true;
+        }
+
+        if (isStartSub){
+            for (int i = 0; i < step; i ++){
+                for (int j = 0; j < portNumber;j++){
+                    trainData[groupCount][count][j] = subData[i*portNumber+j];
+                }
+                count++;
+                if (count == 2500){
+                    groupCount++;
+                    isStartSub = false;
+                    count = 0;
+                    if (groupCount == 30){
+                        groupCount = 0;
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //开始建模,初始化数据
+    public void initData(){
+        trainData = new double[30][2500][8];
+        Epochs = new double[30][4000][8];
+        Labels = new double[1][30];
+        groupCount = 0;
+        currentTagIndex = 0;
+        currentTag = 0;
+        count = 0;
     }
 
     public double[][][] getEpochs() {
@@ -53,7 +158,11 @@ public class SubDataSolution {
         return Labels;
     }
 
-    private int[] solution(String data){
+    public double[][][] getTrainData() {
+        return trainData;
+    }
+
+    public int[] solution(String data){
 //        String hexString = data;
 //        String[] arr = hexString.split(" ");
         String[] arr1 = data.split("-");
@@ -69,7 +178,12 @@ public class SubDataSolution {
 
 
         for (int i = 0;i < arr1.length;i ++){
-            dataArr[i] = Integer.valueOf(arr1[i],16); //16字节字符串转整型
+            try{
+                dataArr[i] = Integer.valueOf(arr1[i].trim(),16); //16字节字符串转整型
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
         //拿到标签位
         int tag = dataArr[arr1.length-3];
@@ -82,6 +196,8 @@ public class SubDataSolution {
         for (int i = 0;i < echartsData.length;i++){
             _3byteTo4byte[i] = byteToInt(echartsData[i]);
         }
+
+        _3byteTo4byte[_3byteTo4byte.length-1] = tag;
 
         return _3byteTo4byte;
     }

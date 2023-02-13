@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dsp-collection">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../dsp-collection.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

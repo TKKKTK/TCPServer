@@ -5,12 +5,12 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/2022_11_23_家用康复脑电/train/for_redistribution_files_only/train.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/2022_11_23_家用康复脑电/bugTest/for_redistribution_files_only/bugTest.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -25,5 +25,24 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Desktop/2022_11_23_家用康复脑电/Training/for_redistribution_files_only/Training.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Desktop/2022_11_23_家用康复脑电/Modeling/for_redistribution_files_only/Modeling.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="dsp-collection" level="project" />
   </component>
 </module>
